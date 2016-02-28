@@ -153,14 +153,10 @@ unsigned char ICACHE_FLASH_ATTR String::reserve(unsigned int size) {
 
 unsigned char ICACHE_FLASH_ATTR String::changeBuffer(unsigned int maxStrLen) {
     size_t newSize = (maxStrLen + 16) & (~0xf);
-    char *newbuffer = (char *) malloc(newSize);
+    char *newbuffer = (char *) realloc(buffer, newSize);
     if(newbuffer) {
-        memset(newbuffer, 0, newSize);
-        if (buffer)
-        {
-            memcpy(newbuffer, buffer, len);
-            free(buffer);
-        }
+        size_t oldSize = capacity + 1; // include NULL.
+        memset(newbuffer + oldSize, 0, newSize - oldSize);
         capacity = newSize - 1;
         buffer = newbuffer;
         return 1;
